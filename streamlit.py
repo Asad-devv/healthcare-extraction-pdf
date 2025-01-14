@@ -6,6 +6,14 @@ import fitz  # PyMuPDF for handling PDFs
 
 # Configure Generative AI model
 genai.configure(api_key="AIzaSyCpPsbTaLV9dya1iG0E_PbgmPiCA94CeUo")
+st.title("PDF Image Analysis App")
+
+st.markdown("""
+### Analyze and Extract Key Information from PDF Images Effortlessly!
+- **Upload a PDF file** to extract tables and essential details automatically.
+- The app uses advanced AI-powered analysis to provide accurate and fast results.
+- Please ensure your PDF contains images or scanned content for best results.
+""")
 
 # Initialize the generative model
 model = genai.GenerativeModel("gemini-1.5-flash-8b")
@@ -82,17 +90,20 @@ def analyze_pdf_images(pdf_file):
     return results
 
 # Streamlit UI
-st.title("PDF Image Analysis App")
 
 uploaded_file = st.file_uploader("Upload a PDF file", type=["pdf"])
 
 if uploaded_file:
     if allowed_file(uploaded_file.name):
-        st.write("Processing your PDF file...")
-        try:
-            analysis_results = analyze_pdf_images(uploaded_file)
-            st.json(analysis_results)
-        except Exception as e:
-            st.error(f"An error occurred: {e}")
+        st.success("PDF file uploaded successfully! Processing...")
+        with st.spinner("Analyzing images in the PDF... Please wait."):
+            try:
+                analysis_results = analyze_pdf_images(uploaded_file)
+                st.success("Analysis complete! 🎉")
+                st.json(analysis_results)
+            except Exception as e:
+                st.error(f"An error occurred during processing: {e}")
     else:
-        st.error("Invalid file type. Please upload a PDF.")
+        st.error("Invalid file type. Please upload a valid PDF.")
+else:
+    st.info("Please upload a PDF file to begin analysis.")
